@@ -1,59 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:11:15 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/17 13:03:30 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/17 11:51:34 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	ft__strcat(char *str, char *buf)
+int get_next_line(int fd, char **line)
 {
-	if (str == NULL)
+	char		buf[BUFFER_SIZE + 1];
+	static int	i = 0;
+	int			j;
+	int			ret;
+
+	if (buf[i] == '\0')
+	while ((ret = read(fd, buf, BUFFER_SIZE)))
 	{
-		if (!())
-	}
-}
-
-int		ft_create_str(char *buf, char **line)
-{
-	const char	*str = NULL;
-	int			i;
-
-	str = ft_strcat(str, buf);
-	if (ft_fulline(str))
-	{
-		*line = ft_cpyline;\
-		str = NULL;
-		return (1);
-	}
-	else
-		return (0);
-}
-
-
-int		get_next_line(int fd, char **line)
-{
-	char	buf[BUFFER_SIZE + 1];
-	int		flag;
-	int		ret;
-
-	flag = 0;
-	while (flag = 0)
-	{
-		if (!(ret = read(fd, buf, BUFFER_SIZE)))
-			return (-1);
-		if (ret == 0)
-			return (0);
+		if (ret <= 0)
+			return ret == 0 ? (0) : (-1);
 		buf[ret + 1] = '\0';
-		flag = ft_create_str(buf, line);
+		j = 0;
+		while (buf[i + j] != '\n' && buf[i + j])
+			j++;
+		if (!(*line = (char *)malloc(sizeof(char) * (j + 1))))
+			return (-1);
+		j = 0;
+		while (buf[i] != '\n' && buf[i])
+			*line[j++] = buf[i++];
+		if (buf[i++] == '\n')
+		{
+			*line[j + 1] = '\0';
+			return (1);
+		}
 	}
-	return (1);
+	return (0);
 }
 
 int		main(int ar, char **av)
@@ -71,9 +57,3 @@ int		main(int ar, char **av)
 	close(fd);
 	return (0);
 }
-
-/*
-read into buffer, if -1 return -1, if 0 print ev existing str return 0
-cpy into new string, if no \n, redo reading and append until str contains \n,
-					if \n substr into line, set string to remaining part return 1
-*/

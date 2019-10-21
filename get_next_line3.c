@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
+/*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/19 16:45:56 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/20 21:55:38 by fredrikalindh    ###   ########.fr       */
+/*   Created: 2019/10/10 14:11:15 by frlindh           #+#    #+#             */
+/*   Updated: 2019/10/18 14:59:41 by fredrikalindh    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,17 +98,51 @@ char	*ft_cpyline(char *str)
 	return (line);
 }
 
-int		ft_create_str(char *buf, char **line, int ret)
+int		ft_create_str(char *buf, char **line)
 {
 	static char	*str = NULL;
 
-	if (ret != 0)
-		str = ft_strcat(str, buf);
+	str = ft_strcat(str, buf);
 	if (ft_fulline(str))
 	{
 		*line = ft_cpyline(str);
 		str = ft_rest(str);
 		return (1);
 	}
+	return (0);
+}
+
+int		get_next_line(int fd, char **line)
+{
+	char	buf[BUFFER_SIZE + 1];
+	int		flag;
+	int		ret;
+
+	flag = 0;
+	buf[0] = '\0';
+	while (flag == 0)
+	{
+		flag = ft_create_str(buf, line);
+		if (flag == 1)
+			return (1);
+		if (!(ret = read(fd, buf, BUFFER_SIZE)))
+			return (-1);
+		buf[ret] = '\0';
+		if (ret == 0)
+			return (0);
+	}
+	return (1);
+}
+
+int		main(int ar, char **av)
+{
+	(void)ar;
+	int		fd;
+	char	*line;
+
+	fd = open(av[1], O_RDONLY);
+	while (get_next_line(fd, &line) == 1)
+		printf("%s\n", line);
+	close(fd);
 	return (0);
 }

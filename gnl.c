@@ -6,7 +6,7 @@
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/22 10:43:19 by fredrikalindh    ###   ########.fr       */
+/*   Updated: 2019/10/22 11:43:00 by fredrikalindh    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ char	*ft_strcat(char *file, char *buf)
 {
 	char	*new;
 	int		i;
-	int		j;
 
 	i = -1;
 	if (file == NULL)
@@ -62,21 +61,20 @@ char	*ft_strcat(char *file, char *buf)
 	return (new);
 }
 
-char	*ft_cpyline(char *file)
+int		ft_cpyline(char *file, char **line)
 {
 	int		i;
-	char 	*line;
 
 	i = 0;
 	while (file[i] != '\n' && file[i])
 		i++;
-	if (!(line = (char *)malloc(sizeof(char) * (i + 1))))
-		return (NULL);
+	if (!(*line = (char *)malloc(sizeof(char) * (i + 1))))
+		return (-1);
 	i = -1;
 	while (file[++i] != '\n' && file[i])
-		line[i] =  file[i];
-	line[i] = '\0';
-	return (line);
+		*line[i] =  file[i];
+	*line[i] = '\0';
+	return (1);
 }
 
 int		get_next_line(int fd, char **line)
@@ -87,15 +85,27 @@ int		get_next_line(int fd, char **line)
 
 	if (fd < 0 || line == NULL)
 		return (-1);
-	file[fd] == NULL;
 	ret = 1;
 	while (ft_fulline(file[fd]) == 0 && ret > 0)
 	{
 		ret = read(fd, buf, BUFFER_SIZE);
 		if (ret <= 0)
 			return (ret);
+		buf[ret] = '\0';
 		file[fd] = ft_strcat(file[fd], buf);
 	}
-	*line = ft_cpyline(file[fd]);
-	return (1);
+	return (ft_cpyline(file[fd], line)); // have to change what's left in a good way
+}
+
+int		main(int ar, char **av)
+{
+	(void)ar;
+	int		fd;
+	char	*line;
+
+	fd = open(av[1], O_RDONLY);
+	while (get_next_line(fd, &line) == 1)
+		printf("%s\n", line);
+	close(fd);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:11:15 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/18 14:59:41 by fredrikalindh    ###   ########.fr       */
+/*   Updated: 2019/10/22 17:57:38 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,12 @@ char	*ft_cpyline(char *str)
 	return (line);
 }
 
-int		ft_create_str(char *buf, char **line)
+int		ft_create_str(char *buf, char **line, int ret)
 {
 	static char	*str = NULL;
 
-	str = ft_strcat(str, buf);
+	if (ret != 0)
+		str = ft_strcat(str, buf);
 	if (ft_fulline(str))
 	{
 		*line = ft_cpyline(str);
@@ -114,35 +115,29 @@ int		ft_create_str(char *buf, char **line)
 
 int		get_next_line(int fd, char **line)
 {
-	char	buf[BUFFER_SIZE + 1];
-	int		flag;
+	char	buf[BUFFER_SIZE + 2];
 	int		ret;
+	int		flag;
 
+	ret = 0;
 	flag = 0;
-	buf[0] = '\0';
+	if (fd < 0 || line == NULL)
+		return (-1);
 	while (flag == 0)
 	{
-		flag = ft_create_str(buf, line);
+		flag = ft_create_str(buf, line, ret);
 		if (flag == 1)
 			return (1);
-		if (!(ret = read(fd, buf, BUFFER_SIZE)))
-			return (-1);
-		buf[ret] = '\0';
-		if (ret == 0)
-			return (0);
+		ret = read(fd, buf, BUFFER_SIZE);
+		if (ret <= 0)
+			return (ret);
+		else if (ret != BUFFER_SIZE && buf[ret - 1] != '\n')
+		{
+			buf[ret] = '\n';
+			buf[ret + 1] = '\0';
+		}
+		else
+			buf[ret] = '\0';
 	}
 	return (1);
-}
-
-int		main(int ar, char **av)
-{
-	(void)ar;
-	int		fd;
-	char	*line;
-
-	fd = open(av[1], O_RDONLY);
-	while (get_next_line(fd, &line) == 1)
-		printf("%s\n", line);
-	close(fd);
-	return (0);
 }

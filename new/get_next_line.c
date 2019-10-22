@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   gnl.c                                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/22 11:43:00 by fredrikalindh    ###   ########.fr       */
+/*   Updated: 2019/10/22 17:52:51 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "gnl.h"
+#include "get_next_line.h"
 
 int		ft_strlen(char *str)
 {
@@ -49,7 +49,8 @@ char	*ft_strcat(char *file, char *buf)
 	}
 	else
 	{
-		if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) + ft_strlen(buf) + 1))))
+		if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) +
+		ft_strlen(buf) + 1))))
 			return (NULL);
 		while (file[++i])
 			new[i] = file[i];
@@ -61,25 +62,36 @@ char	*ft_strcat(char *file, char *buf)
 	return (new);
 }
 
-int		ft_cpyline(char *file, char **line)
+char	*ft_cpyline(char **file, int fd)
 {
 	int		i;
+	int		j;
+	char	*line;
+	char	*temp;
 
 	i = 0;
-	while (file[i] != '\n' && file[i])
+	while (file[fd] && file[fd][i] != '\n' && file[fd][i] != '\0')
 		i++;
-	if (!(*line = (char *)malloc(sizeof(char) * (i + 1))))
-		return (-1);
+	if (!(line = (char *)malloc(sizeof(char) * (i + 1))))
+		return (NULL);
 	i = -1;
-	while (file[++i] != '\n' && file[i])
-		*line[i] =  file[i];
-	*line[i] = '\0';
-	return (1);
+	while (file[fd] && file[fd][++i] != '\n' && file[fd][i] != '\0')
+		line[i] = file[fd][i];
+	line[i++] = '\0';
+	if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][i])))))
+		return (NULL);
+	j = -1;
+	while (file[fd] && file[fd][i + ++j] != '\0')
+		temp[j] = file[fd][i + j];
+	temp[j] = '\0';
+	free(file[fd]);
+	file[fd] = temp;
+	return (line);
 }
 
 int		get_next_line(int fd, char **line)
 {
-	char		buf[BUFFER_SIZE + 1];
+	char		buf[BUFF_SIZE + 2];
 	int			ret;
 	static char	*file[1024];
 
@@ -88,24 +100,12 @@ int		get_next_line(int fd, char **line)
 	ret = 1;
 	while (ft_fulline(file[fd]) == 0 && ret > 0)
 	{
-		ret = read(fd, buf, BUFFER_SIZE);
-		if (ret <= 0)
-			return (ret);
+		if ((ret = read(fd, buf, BUFF_SIZE)) == -1)
+			return (-1);
 		buf[ret] = '\0';
 		file[fd] = ft_strcat(file[fd], buf);
 	}
-	return (ft_cpyline(file[fd], line)); // have to change what's left in a good way
-}
-
-int		main(int ar, char **av)
-{
-	(void)ar;
-	int		fd;
-	char	*line;
-
-	fd = open(av[1], O_RDONLY);
-	while (get_next_line(fd, &line) == 1)
-		printf("%s\n", line);
-	close(fd);
-	return (0);
+	if (!(*line = ft_cpyline(file, fd)))
+		return (-1);
+	return (ret == 0 ? 0 : 1);
 }

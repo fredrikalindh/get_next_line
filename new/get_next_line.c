@@ -6,7 +6,7 @@
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/22 17:52:51 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/23 12:05:39 by fredrikalindh    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,52 +38,46 @@ char	*ft_strcat(char *file, char *buf)
 	char	*new;
 	int		i;
 
-	i = -1;
-	if (file == NULL)
-	{
-		if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(buf) + 1))))
-			return (NULL);
-		while (buf[++i])
-			new[i] = buf[i];
-		new[i] = '\0';
-	}
-	else
-	{
-		if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) +
+	if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) +
 		ft_strlen(buf) + 1))))
-			return (NULL);
-		while (file[++i])
-			new[i] = file[i];
-		free(file);
-		while (buf && *buf)
-			new[i++] = *buf++;
-		new[i] = '\0';
+		return (NULL);
+	i = 0;
+	while (file != NULL && file[i])
+	{
+		new[i] = file[i];
+		i++;
 	}
+	if (file != NULL)
+		free(file);
+	while (buf != NULL && *buf != '\0')
+		new[i++] = *buf++;
+	new[i] = '\0';
 	return (new);
 }
 
-char	*ft_cpyline(char **file, int fd)
+char	*ft_cpyline(char **file, int fd, int i, int ret)
 {
-	int		i;
 	int		j;
 	char	*line;
 	char	*temp;
 
-	i = 0;
 	while (file[fd] && file[fd][i] != '\n' && file[fd][i] != '\0')
 		i++;
-	if (!(line = (char *)malloc(sizeof(char) * (i + 1))))
+	if ((ret == 0 && i == 0) || !(line = (char *)malloc(sizeof(char) * (i + 1))))
 		return (NULL);
 	i = -1;
 	while (file[fd] && file[fd][++i] != '\n' && file[fd][i] != '\0')
 		line[i] = file[fd][i];
-	line[i++] = '\0';
-	if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][i])))))
-		return (NULL);
-	j = -1;
-	while (file[fd] && file[fd][i + ++j] != '\0')
-		temp[j] = file[fd][i + j];
-	temp[j] = '\0';
+	line[i] = '\0';
+	temp = NULL;
+	if ((j = -1) == -1 && file[fd] && file[fd][i] != '\0')
+	{
+		if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][++i] + 1)))))
+			return (NULL);
+		while (file[fd][i + ++j] != '\0')
+			temp[j] = file[fd][i + j];
+		temp[j] = '\0';
+	}
 	free(file[fd]);
 	file[fd] = temp;
 	return (line);
@@ -91,9 +85,9 @@ char	*ft_cpyline(char **file, int fd)
 
 int		get_next_line(int fd, char **line)
 {
-	char		buf[BUFF_SIZE + 2];
+	char		buf[BUFF_SIZE + 1];
 	int			ret;
-	static char	*file[1024];
+	static char	*file[255];
 
 	if (fd < 0 || line == NULL)
 		return (-1);
@@ -105,7 +99,18 @@ int		get_next_line(int fd, char **line)
 		buf[ret] = '\0';
 		file[fd] = ft_strcat(file[fd], buf);
 	}
-	if (!(*line = ft_cpyline(file, fd)))
-		return (-1);
-	return (ret == 0 ? 0 : 1);
+	*line = ft_cpyline(file, fd, 0, ret);
+	return (*line == NULL ? 0 : 1);
+}
+
+int		main(int argc, char **argv)
+{
+	int		fd;
+	char	*line;
+
+	(void)argc;
+	fd = open((argv[1]), O_RDONLY);
+	while (get_next_line(fd, &line) == 1)
+		printf("%s\n", line);
+	return (0);
 }

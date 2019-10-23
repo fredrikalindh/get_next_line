@@ -6,7 +6,7 @@
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:11:15 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/22 17:57:38 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/22 22:29:15 by fredrikalindh    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,4 +140,16 @@ int		get_next_line(int fd, char **line)
 			buf[ret] = '\0';
 	}
 	return (1);
+}
+
+int		main(int argc, char **argv)
+{
+	int		fd;
+	char	*line;
+
+	(void)argc;
+	fd = open((argv[1]), O_RDONLY);
+	while (get_next_line(fd, &line) == 1)
+		printf("|%s|\n", line);
+	return (0);
 }

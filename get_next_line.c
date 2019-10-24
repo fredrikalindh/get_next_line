@@ -6,40 +6,36 @@
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/24 15:09:33 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/24 17:09:02 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int		ft_strlen(char *str)
+static int		ft_fullen(char *str, int flag)
 {
-	int			i;
-
-	i = 0;
-	while (str != NULL && str[i])
-		i++;
-	return (i + 1);
-}
-
-int		ft_fulline(char *file)
-{
-	while (file != NULL && *file != '\0')
+	if (flag == 1)
 	{
-		if (*file == '\n')
-			return (1);
-		file++;
+		while (str != NULL && *str != '\0')
+		{
+			if (*str == '\n')
+				return (1);
+			str++;
+		}
+		return (0);
 	}
-	return (0);
+	else
+		while (str != NULL && str[flag])
+			flag++;
+	return (flag);
 }
 
-char	*ft_strcat(char *file, char *buf)
+static char	*ft_strcat(char *file, char *buf)
 {
 	char	*new;
 	int		i;
 
-	if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) +
-		ft_strlen(buf) + 2))))
+	if (!(new = (char *)malloc(ft_fullen(file, 0) + ft_fullen(buf, 0) + 1)))
 		return (NULL);
 	i = 0;
 	while (file != NULL && file[i])
@@ -55,7 +51,7 @@ char	*ft_strcat(char *file, char *buf)
 	return (new);
 }
 
-char	*ft_cpyline(char **file, int fd, int i, int ret)
+static char	*ft_cpyline(char **file, int fd, int i, int ret)
 {
 	int		j;
 	char	*line;
@@ -64,16 +60,15 @@ char	*ft_cpyline(char **file, int fd, int i, int ret)
 	while (file[fd] && file[fd][i] != '\n' && file[fd][i] != '\0')
 		i++;
 	if (((j = 0) == 0 && ret == 0 && i == 0) || file[fd] == NULL ||
-	!(line = (char *)malloc(sizeof(char) * (i + 1))))
+	!(line = (char *)malloc(i + 1)))
 		return (NULL);
 	i = -1;
 	while (file[fd] && file[fd][++i] != '\n' && file[fd][i] != '\0')
 		line[i] = file[fd][i];
 	line[i] = '\0';
-	j = 0;
 	if ((temp = NULL) == NULL && file[fd] && file[fd][i++] != '\0')
 	{
-		if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][i])))))
+		if (!(temp = (char *)malloc(ft_fullen(&file[fd][i], 0) + 1)))
 			return (NULL);
 		while (file[fd][i] != '\0')
 			temp[j++] = file[fd][i++];
@@ -93,7 +88,7 @@ int		get_next_line(int fd, char **line)
 	if (fd < 0 || line == NULL)
 		return (-1);
 	ret = 1;
-	while (ft_fulline(file[fd]) == 0 && ret > 0)
+	while (ft_fullen(file[fd], 1) == 0 && ret > 0)
 	{
 		if ((ret = read(fd, buf, BUFF_SIZE)) == -1)
 			return (-1);

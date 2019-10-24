@@ -6,7 +6,7 @@
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:09:36 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/24 14:53:35 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/24 17:00:49 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,5 @@
 # endif
 
 int		get_next_line(int fd, char **line);
-char	*ft_cpyline(char **file, int fd, int i, int ret);
-char	*ft_strcat(char *file, char *buf);
-int		ft_fulline(char *file);
-int		ft_strlen(char *str);
 
 #endif

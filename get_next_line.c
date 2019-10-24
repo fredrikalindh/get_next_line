@@ -6,7 +6,7 @@
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/23 12:05:39 by fredrikalindh    ###   ########.fr       */
+/*   Updated: 2019/10/24 15:09:33 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		ft_strlen(char *str)
 	i = 0;
 	while (str != NULL && str[i])
 		i++;
-	return (i);
+	return (i + 1);
 }
 
 int		ft_fulline(char *file)
@@ -39,7 +39,7 @@ char	*ft_strcat(char *file, char *buf)
 	int		i;
 
 	if (!(new = (char *)malloc(sizeof(char) * (ft_strlen(file) +
-		ft_strlen(buf) + 1))))
+		ft_strlen(buf) + 2))))
 		return (NULL);
 	i = 0;
 	while (file != NULL && file[i])
@@ -63,19 +63,20 @@ char	*ft_cpyline(char **file, int fd, int i, int ret)
 
 	while (file[fd] && file[fd][i] != '\n' && file[fd][i] != '\0')
 		i++;
-	if ((ret == 0 && i == 0) || !(line = (char *)malloc(sizeof(char) * (i + 1))))
+	if (((j = 0) == 0 && ret == 0 && i == 0) || file[fd] == NULL ||
+	!(line = (char *)malloc(sizeof(char) * (i + 1))))
 		return (NULL);
 	i = -1;
 	while (file[fd] && file[fd][++i] != '\n' && file[fd][i] != '\0')
 		line[i] = file[fd][i];
 	line[i] = '\0';
-	temp = NULL;
-	if ((j = -1) == -1 && file[fd] && file[fd][i] != '\0')
+	j = 0;
+	if ((temp = NULL) == NULL && file[fd] && file[fd][i++] != '\0')
 	{
-		if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][++i] + 1)))))
+		if (!(temp = (char *)malloc(sizeof(char) * (ft_strlen(&file[fd][i])))))
 			return (NULL);
-		while (file[fd][i + ++j] != '\0')
-			temp[j] = file[fd][i + j];
+		while (file[fd][i] != '\0')
+			temp[j++] = file[fd][i++];
 		temp[j] = '\0';
 	}
 	free(file[fd]);
@@ -87,7 +88,7 @@ int		get_next_line(int fd, char **line)
 {
 	char		buf[BUFF_SIZE + 1];
 	int			ret;
-	static char	*file[255];
+	static char	*file[1024];
 
 	if (fd < 0 || line == NULL)
 		return (-1);
@@ -101,16 +102,4 @@ int		get_next_line(int fd, char **line)
 	}
 	*line = ft_cpyline(file, fd, 0, ret);
 	return (*line == NULL ? 0 : 1);
-}
-
-int		main(int argc, char **argv)
-{
-	int		fd;
-	char	*line;
-
-	(void)argc;
-	fd = open((argv[1]), O_RDONLY);
-	while (get_next_line(fd, &line) == 1)
-		printf("%s\n", line);
-	return (0);
 }

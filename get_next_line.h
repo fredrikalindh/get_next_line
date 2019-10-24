@@ -6,7 +6,7 @@
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:09:36 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/22 17:54:39 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/24 14:53:35 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,14 @@
 # include <stdlib.h>
 # include <stdio.h>
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1024
+# ifndef BUFF_SIZE
+#  define BUFF_SIZE 1024
 # endif
 
 int		get_next_line(int fd, char **line);
-int		ft_create_str(char *buf, char **line, int ret);
-char	*ft_cpyline(char *str);
-int		ft_fulline(char *str);
-char	*ft_strcat(char *str, char *buf);
-char	*ft_rest(char *str);
+char	*ft_cpyline(char **file, int fd, int i, int ret);
+char	*ft_strcat(char *file, char *buf);
+int		ft_fulline(char *file);
 int		ft_strlen(char *str);
 
 #endif

@@ -6,13 +6,13 @@
 /*   By: fredrika <fredrika@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 09:54:38 by fredrika          #+#    #+#             */
-/*   Updated: 2019/10/24 17:09:02 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/26 20:23:19 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int		ft_fullen(char *str, int flag)
+static int	ft_fullen(char *str, int flag)
 {
 	if (flag == 1)
 	{
@@ -79,11 +79,11 @@ static char	*ft_cpyline(char **file, int fd, int i, int ret)
 	return (line);
 }
 
-int		get_next_line(int fd, char **line)
+int			get_next_line(int fd, char **line)
 {
 	char		buf[BUFF_SIZE + 1];
 	int			ret;
-	static char	*file[1024];
+	static char	*file[10241]; // IF BIGGER, CHANGE ?
 
 	if (fd < 0 || line == NULL)
 		return (-1);

@@ -6,7 +6,7 @@
 /*   By: frlindh <frlindh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:09:36 by frlindh           #+#    #+#             */
-/*   Updated: 2019/10/24 17:00:49 by frlindh          ###   ########.fr       */
+/*   Updated: 2019/10/26 11:57:48 by frlindh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <stdio.h>
 
 # ifndef BUFF_SIZE
-#  define BUFF_SIZE 1024
+#  define BUFF_SIZE 1
 # endif
 
 int		get_next_line(int fd, char **line);
